@@ -1,16 +1,16 @@
 package com.xiaoju.uemc.tinyid.client.utils;
 
-import com.xiaoju.uemc.tinyid.client.factory.impl.IdGeneratorFactoryClient;
-import com.xiaoju.uemc.tinyid.base.generator.IdGenerator;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.xiaoju.uemc.tinyid.base.generator.IdGenerator;
+import com.xiaoju.uemc.tinyid.client.factory.impl.IdGeneratorFactoryClient;
 
 /**
  * @author du_imba
  */
 public class TinyId {
-    private static IdGeneratorFactoryClient client = IdGeneratorFactoryClient.getInstance(null);
+    private static IdGeneratorFactoryClient client = IdGeneratorFactoryClient.getInstance();
 
     private TinyId() {
 

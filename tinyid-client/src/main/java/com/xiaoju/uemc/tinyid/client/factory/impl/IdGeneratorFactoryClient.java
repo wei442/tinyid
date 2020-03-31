@@ -1,18 +1,17 @@
 package com.xiaoju.uemc.tinyid.client.factory.impl;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
 import com.xiaoju.uemc.tinyid.base.factory.AbstractIdGeneratorFactory;
 import com.xiaoju.uemc.tinyid.base.generator.IdGenerator;
 import com.xiaoju.uemc.tinyid.base.generator.impl.CachedIdGenerator;
 import com.xiaoju.uemc.tinyid.client.config.TinyIdClientConfig;
 import com.xiaoju.uemc.tinyid.client.service.impl.HttpSegmentIdServiceImpl;
-import com.xiaoju.uemc.tinyid.client.utils.PropertiesLoader;
 import com.xiaoju.uemc.tinyid.client.utils.TinyIdNumberUtils;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Logger;
+import com.xiaoju.uemc.tinyid.client.vo.TinyIdClientVo;
 
 /**
  * @author du_imba
@@ -21,44 +20,31 @@ public class IdGeneratorFactoryClient extends AbstractIdGeneratorFactory {
 
     private static final Logger logger = Logger.getLogger(IdGeneratorFactoryClient.class.getName());
 
-    private static IdGeneratorFactoryClient idGeneratorFactoryClient;
-
-    private static final String DEFAULT_PROP = "tinyid_client.properties";
+    private static IdGeneratorFactoryClient idGeneratorFactoryClient = null;
 
     private static final int DEFAULT_TIME_OUT = 5000;
 
     private static String serverUrl = "http://{0}/tinyid/id/nextSegmentIdSimple?token={1}&bizType=";
 
     private IdGeneratorFactoryClient() {
-
     }
 
-    public static IdGeneratorFactoryClient getInstance(String location) {
+    public static IdGeneratorFactoryClient getInstance() {
         if (idGeneratorFactoryClient == null) {
-            synchronized (IdGeneratorFactoryClient.class) {
-                if (idGeneratorFactoryClient == null) {
-                    if (location == null || "".equals(location)) {
-                        init(DEFAULT_PROP);
-                    } else {
-                        init(location);
-                    }
-                }
-            }
+        	return new IdGeneratorFactoryClient();
         }
         return idGeneratorFactoryClient;
     }
 
-    private static void init(String location) {
-        idGeneratorFactoryClient = new IdGeneratorFactoryClient();
-        Properties properties = PropertiesLoader.loadProperties(location);
-        String tinyIdToken = properties.getProperty("tinyid.token");
-        String tinyIdServer = properties.getProperty("tinyid.server");
-        String readTimeout = properties.getProperty("tinyid.readTimeout");
-        String connectTimeout = properties.getProperty("tinyid.connectTimeout");
+    public static boolean init(TinyIdClientVo tinyIdClientVo) {
+        String tinyIdToken = tinyIdClientVo.getTinyIdToken();
+        String tinyIdServer = tinyIdClientVo.getTinyIdServer();
+        String readTimeout = tinyIdClientVo.getReadTimeout();
+        String connectTimeout = tinyIdClientVo.getConnectTimeout();
 
         if (tinyIdToken == null || "".equals(tinyIdToken.trim())
                 || tinyIdServer == null || "".equals(tinyIdServer.trim())) {
-            throw new IllegalArgumentException("cannot find tinyid.token and tinyid.server config in:" + location);
+            throw new RuntimeException("cannot get tinyIdToken and tinyIdServer");
         }
 
         TinyIdClientConfig tinyIdClientConfig = TinyIdClientConfig.getInstance();
@@ -75,6 +61,7 @@ public class IdGeneratorFactoryClient extends AbstractIdGeneratorFactory {
         }
         logger.info("init tinyId client success url info:" + serverList);
         tinyIdClientConfig.setServerList(serverList);
+        return true;
     }
 
     @Override

@@ -1,5 +1,12 @@
 package com.xiaoju.uemc.tinyid.server.config;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,12 +16,6 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-
-import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author du_imba
@@ -67,7 +68,8 @@ public class DataSourceConfig {
             if (dataSourceType != null && !"".equals(dataSourceType.trim())) {
                 className = dataSourceType;
             }
-            Class<? extends DataSource> type = (Class<? extends DataSource>) Class.forName(className);
+            @SuppressWarnings("unchecked")
+			Class<? extends DataSource> type = (Class<? extends DataSource>) Class.forName(className);
             String driverClassName = dsMap.get("driver-class-name").toString();
             String url = dsMap.get("url").toString();
             String username = dsMap.get("username").toString();
